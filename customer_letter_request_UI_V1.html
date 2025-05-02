@@ -190,7 +190,7 @@
                 <option value="Sent to Email">Sent to Email</option>
                 <option value="Qurity to Branch">Qurity to Branch</option>
               </select>
-            </div>
+          </div>
   
           
           <div class="form-group">
@@ -241,7 +241,7 @@
             payload.append('nic_number', formData.get('nic_number'));
             payload.append('branch', formData.get('branch'));
             payload.append('letter_type', formData.get('letter_type'));
-            payload.append('request_delivery_type', formData.get('Request_delivery_type'));
+            payload.append('request_delivery_type', formData.get('request_delivery_type'));
             payload.append('ex', ex);
             payload.append('payment_slip', JSON.stringify({
               filename: file.name,
