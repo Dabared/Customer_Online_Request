@@ -1,0 +1,62 @@
+function onEdit(e) {
+  const sheet = e.source.getActiveSheet();
+  const range = e.range;
+
+  if (sheet.getName() !== 'Sheet1') return;
+  if (range.getColumn() !== 7) return; // Trigger only on column G
+
+  const branchName = range.getValue();
+  if (!branchName) return;
+
+  const email = getEmailForBranch(branchName);
+  if (!email) return;
+
+  const editedRow = range.getRow();
+  const sheetId = SpreadsheetApp.getActiveSpreadsheet().getId();
+
+  const webAppURL = 'https://script.google.com/macros/s/AKfycbyu65dI3yQnq4KSKiEPRPj_d7b3g5g7rqqmnZqCEZYnqOEbvbtWXhjfG_Qan6nVWTfc/exec';
+
+  const approveLink = `${webAppURL}?row=${editedRow}&action=Approve&sheetId=${sheetId}`;
+  const rejectLink = `${webAppURL}?row=${editedRow}&action=Reject&sheetId=${sheetId}`;
+
+  const customerName = sheet.getRange(editedRow, 2).getValue(); // Column B
+  const agreementNumber = sheet.getRange(editedRow, 5).getValue(); // Column E
+  const nicNumber = sheet.getRange(editedRow, 6).getValue(); // Column F
+  const requestType = sheet.getRange(editedRow, 8).getValue(); // Column H
+  const deliveryType = sheet.getRange(editedRow, 9).getValue(); // Column I
+
+  const subject = `Customer Request Online Letter - ${customerName} / ${agreementNumber}`;
+
+  const htmlBody = `
+    <p>Dear Branch Manager,</p>
+    <p>The following customer has submitted a request for an online letter. Please review the details below:</p>
+    <ul>
+      <li><strong>Customer Name:</strong> ${customerName}</li>
+      <li><strong>Agreement Number:</strong> ${agreementNumber}</li>
+      <li><strong>NIC Number:</strong> ${nicNumber}</li>
+      <li><strong>Requested Letter Type:</strong> ${requestType}</li>
+      <li><strong>Delivery Method:</strong> ${deliveryType}</li>
+    </ul>
+    <p>Please take appropriate action by clicking one of the options below:</p>
+    <p>
+      <a href="${approveLink}" style="padding: 8px 12px; background-color: green; color: white; text-decoration: none;">Approve</a>
+      &nbsp;
+      <a href="${rejectLink}" style="padding: 8px 12px; background-color: red; color: white; text-decoration: none;">Reject</a>
+    </p>
+    <p>Regards,<br>Auto Notification System</p>
+  `;
+
+  GmailApp.sendEmail(email, subject, '', { htmlBody: htmlBody });
+}
+
+function getEmailForBranch(branchName) {
+  const mapSheet = SpreadsheetApp.getActive().getSheetByName('Sheet2');
+  const data = mapSheet.getRange('A2:B' + mapSheet.getLastRow()).getValues();
+
+  for (let i = 0; i < data.length; i++) {
+    if (data[i][0].toString().trim().toLowerCase() === branchName.toString().trim().toLowerCase()) {
+      return data[i][1];
+    }
+  }
+  return null;
+}
