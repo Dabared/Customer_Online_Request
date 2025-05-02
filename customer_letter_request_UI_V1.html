@@ -206,9 +206,8 @@
           </div>
   
           <button type="submit" class="btn btn-primary btn-block">Submit</button>
-          <button type="submit" class="btn btn-primary btn-block">Submit</button>
           <button onclick="handlmainpage()">Main Page</button>
-          <button onclick="submit()">Submit</button>
+         
 
          
           
@@ -269,6 +268,11 @@
           swal("Error", "Please attach the payment slip!", "error");
         }
       });
+    function handlmainpage() {
+      // Redirect to the Customer Request form page
+      window.location.href = "index.html";
+    }
+  
     </script>
   </body>
   </html>
