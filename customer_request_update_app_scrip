@@ -1,0 +1,49 @@
+function doPost(e) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+    const folder = DriveApp.getFolderById("1wfUKwfhj9_9uMRTddd2_OEnGkSsBKTHH"); // <<== Replace this with your Uploads folder ID
+
+    const name = e.parameter.name;
+    const email = e.parameter.email;
+    const contact_number = e.parameter.contact_number;
+    const agreement_number = e.parameter.agreement_number;
+    const nic_number = e.parameter.nic_number;
+    const branch = e.parameter.branch;
+    const letter_type = e.parameter.letter_type;
+    const request_delivery_type = e.parameter.request_delivery_type;
+    const ex = e.parameter.ex;
+
+    // Generate Reference Number
+    const today = Utilities.formatDate(new Date(), "GMT+5:30", "yyyyMMdd");
+    const timestamp = new Date();
+    const lastRow = sheet.getLastRow();
+    const refNo = "REF-" + today + "-" + ("000" + (lastRow + 1)).slice(-4);
+
+    // Save file to Drive
+    let fileUrl = "";
+    if (e.parameter.payment_slip) {
+      const fileData = JSON.parse(e.parameter.payment_slip);
+      const blob = Utilities.newBlob(Utilities.base64Decode(fileData.bytes), fileData.mimeType, fileData.filename);
+      const savedFile = folder.createFile(blob);
+      fileUrl = savedFile.getUrl();
+    }
+
+    // Append data to sheet
+    sheet.appendRow([
+      new Date(), name, email, contact_number, agreement_number,
+      nic_number, branch, letter_type,request_delivery_type, ex, refNo, fileUrl
+    ]);
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "success",
+      reference_number: refNo
+    })).setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: err.message
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
