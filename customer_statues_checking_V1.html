@@ -36,7 +36,8 @@
   <input type="text" id="ref" placeholder="Enter Reference Number (e.g. REF-20250429-0004)">
   <button onclick="fetchStatus()">Check Status</button>
   <div id="status"></div>
-
+  <button onclick="handlmainpage()">Main Page</button>
+  
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwxseJ9q6AQ_RtfusaeRMV5Jl0oCPwBMryereMdpqdm9OQ8uP5x2aV7I-bu5vH7MJAS/exec"; // <-- replace with your URL
 
@@ -66,6 +67,10 @@
           console.error(error);
           document.getElementById("status").innerHTML = `<p style="color:red;">Error fetching data. Try again later.</p>`;
         });
+    }
+    function handlmainpage() {
+  
+      window.location.href = "index.html";
     }
   </script>
 </body>
