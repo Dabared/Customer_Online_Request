@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Request Status Viewer</title>
+  <style>
+    body {
+        background-color: #042741;
+        color: white;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 50px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px 0;
+      width: 100%;
+    }
+    .status-box {
+        display: block;
+        width: 300px;
+        margin: 15px auto;
+        padding: 12px;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background-color: #042741;
+        color: white;
+        transition: background-color 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <h2>Customer Request Status</h2>
+  <input type="text" id="ref" placeholder="Enter Reference Number (e.g. REF-20250429-0004)">
+  <button onclick="fetchStatus()">Check Status</button>
+  <div id="status"></div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwxseJ9q6AQ_RtfusaeRMV5Jl0oCPwBMryereMdpqdm9OQ8uP5x2aV7I-bu5vH7MJAS/exec"; // <-- replace with your URL
+
+    function fetchStatus() {
+      const ref = document.getElementById("ref").value.trim();
+      if (!ref) {
+        document.getElementById("status").innerHTML = `<p style="color:red;">Please enter a reference number.</p>`;
+        return;
+      }
+
+      fetch(`${API_URL}?ref=${encodeURIComponent(ref)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) {
+            document.getElementById("status").innerHTML = `<p style="color:red;">${data.error}</p>`;
+          } else {
+            document.getElementById("status").innerHTML = `
+              <div class="status-box">
+                <p><strong>Branch Status:</strong> ${data.branchStatus}</p>
+                <p><strong>Finance Verification:</strong> ${data.financeStatus}</p>
+                <p><strong>Operations:</strong> ${data.opsStatus}</p>
+              </div>
+            `;
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          document.getElementById("status").innerHTML = `<p style="color:red;">Error fetching data. Try again later.</p>`;
+        });
+    }
+  </script>
+</body>
+</html>
